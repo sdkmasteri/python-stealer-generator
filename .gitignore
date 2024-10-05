@@ -1,3 +1,6 @@
-/app.ico
 /build
+/dist
 /stealer generator.py
+/stealer generator.spec
+/version.py
+/version.txt
