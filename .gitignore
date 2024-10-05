@@ -1,6 +1,5 @@
 /build
 /dist
-/stealer generator.py
+*.py
 *.spec
-/version.py
 *.txt
